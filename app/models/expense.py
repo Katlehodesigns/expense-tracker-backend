@@ -7,4 +7,4 @@ class Expense(Base):
     id = Column(Integer,primary_key=True, index=True)
     description = Column(String, nullable= False)
     amount = Column(Float, nullable=False)
-    data = Column(Date, nullable=False)
+    date = Column(Date, nullable=False)
