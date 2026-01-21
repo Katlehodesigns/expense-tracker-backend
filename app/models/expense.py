@@ -1,8 +1,10 @@
-from pydantic imort BaseModel
-from datetime import date
+from sqlalchemy import Column, Integer, String, Float, Date
+from app.db.database import Base
 
-class Expense(BaseModle):
-    id: int
-    description: str
-    amount: float
-    date:date
+class Expense(Base):
+    __tablename__="expenses"
+
+    id = Column(Integer,primary_key=True, index=True)
+    description = Column(String, nullable= False)
+    amount = Column(Float, nullable=False)
+    data = Column(Date, nullable=False)

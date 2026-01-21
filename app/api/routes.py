@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 
-router = APIRouter(prefix="/api")
+router = APIRouter()
 
 @router.get("/ping")
-def ping():return{"message":"pong"}
+def ping():
+    return {"message": "pong"}
