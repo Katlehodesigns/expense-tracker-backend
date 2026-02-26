@@ -1,13 +1,19 @@
 from pydantic import BaseModel
-from datetime import date
+from typing import Optional
+import datetime
+
 
 class ExpenseCreate(BaseModel):
     description: str
     amount: float
-    date: date
+    date: datetime.date
+
 
 class ExpenseOut(ExpenseCreate):
     id: int
 
-    class Config:
-        orm_mode = True
+
+class ExpenseUpdate(BaseModel):
+    description: str | None= None
+    amount: float |None = None
+    date: datetime.date | None = None
