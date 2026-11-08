@@ -14,6 +14,6 @@ class ExpenseOut(ExpenseCreate):
 
 
 class ExpenseUpdate(BaseModel):
-    description: str | None= None
-    amount: float |None = None
-    date: datetime.date | None = None
+    description: Optional[str] = None
+    amount: Optional[float] = None
+    date: Optional[datetime.date] = None
