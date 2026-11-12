@@ -679,3 +679,113 @@ def test_user_cannot_patch_another_users_expense(client):
     assert owner_response.status_code == 200
     assert owner_response.json()[0]["description"] == "Original groceries"
     assert owner_response.json()[0]["amount"] == 600.00
+
+
+
+def test_user_registration_with_invalid_email(client):
+    response = client.post(
+        "/auth/register",
+        json={
+            "email": "not-an-email",
+            "password": "TestPassword123!"
+        }
+    )
+
+    assert response.status_code == 422
+
+
+
+def test_login_with_nonexistent_user(client):
+    response = client.post(
+        "/auth/login",
+        data={
+            "username": "nonexistent@example.com",
+            "password": "TestPassword123!"
+        }
+    )
+
+    assert response.status_code == 401
+
+
+
+def test_login_without_password(client):
+    response = client.post(
+        "/auth/login",
+        data={
+            "username": "test@example.com"
+        }
+    )
+
+    assert response.status_code == 422
+
+
+
+def test_create_expense_with_negative_amount(client):
+    user_data = {
+        "email": "negativeamount@example.com",
+        "password": "TestPassword123!"
+    }
+
+    client.post("/auth/register", json=user_data)
+
+    login_response = client.post(
+        "/auth/login",
+        data={
+            "username": user_data["email"],
+            "password": user_data["password"]
+        }
+    )
+
+    token = login_response.json()["access_token"]
+
+    response = client.post(
+        "/expenses/",
+        json={
+            "description": "Invalid expense",
+            "amount": -100.00,
+            "date": "2026-11-12"
+        },
+        headers={"Authorization": f"Bearer {token}"}
+    )
+
+    assert response.status_code == 422
+
+
+def test_partially_update_expense_with_negative_amount(client):
+    user_data = {
+        "email": "negativeupdate@example.com",
+        "password": "TestPassword123!"
+    }
+
+    client.post("/auth/register", json=user_data)
+
+    login_response = client.post(
+        "/auth/login",
+        data={
+            "username": user_data["email"],
+            "password": user_data["password"]
+        }
+    )
+
+    token = login_response.json()["access_token"]
+    headers = {"Authorization": f"Bearer {token}"}
+
+    create_response = client.post(
+        "/expenses/",
+        json={
+            "description": "Valid expense",
+            "amount": 100.00,
+            "date": "2026-11-12"
+        },
+        headers=headers
+    )
+
+    expense_id = create_response.json()["id"]
+
+    response = client.patch(
+        f"/expenses/{expense_id}",
+        json={"amount": -50.00},
+        headers=headers
+    )
+
+    assert response.status_code == 422
